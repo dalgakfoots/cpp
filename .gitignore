@@ -36,3 +36,9 @@
 *.app
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
+/.idea/cpp.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.vscode/settings.json
+/.idea/vcs.xml
+/.idea/workspace.xml
