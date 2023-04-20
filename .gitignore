@@ -435,6 +435,4 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudio
-/GameDevPracticePackage-master/Chapter4/Lecture1
-/GameDevPracticePackage-master/Chapter3
-/GameDevPracticePackage-master/Chapter2
+
