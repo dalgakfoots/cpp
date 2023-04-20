@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main_chapter19_8.cpp">
+    <ClCompile Include="main_chapter20_5.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main_chapter20_5_client.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
