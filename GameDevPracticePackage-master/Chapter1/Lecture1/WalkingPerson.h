@@ -96,6 +96,8 @@ namespace jm
 
 	class RepulsorBeam
 	{
+		vec2 center = vec2(0.0f, 0.0f);
+		vec2 velocity = vec2(0.0f, 0.0f);
 		bool action = false;
 
 	public :
@@ -105,16 +107,31 @@ namespace jm
 			if (action)
 			{
 				beginTransformation();
-				translate(vec2(0.8f, 0.0f));
-				drawFilledBox(Colors::skyblue, 1.0f, 1.0f);
+				translate(center);
+				drawFilledBox(Colors::skyblue , 1.0f , 0.1f);
 				endTransformation();
 				
 			}
 		}
 
+		void update(const float dt)
+		{
+			center += velocity * dt;
+		}
+
 		void toggleAction(const bool in_action)
 		{
 			action = in_action;
+		}
+
+		void setVelocity()
+		{
+			velocity = vec2(0.05f, 0.0f);
+		}
+
+		const vec2 getCenter()
+		{
+			return center;
 		}
 	};
 
@@ -129,31 +146,60 @@ namespace jm
 	{
 		//Person p{ vec2(0.5f , 0.5f) };
 		std::vector<Person> v_people;
-		RepulsorBeam b;
+		RepulsorBeam* b = nullptr;
+		bool fire = false;
 	public :
 		WalkingPerson()
 		{
 			makePeople(3);
 		}
+
+		~WalkingPerson()
+		{
+			delete b;
+		}
 	public:
 		void update() override
 		{
+
 			if (isKeyPressed(GLFW_KEY_SPACE))
 			{
 				v_people[0].toggleAction(true);
-				b.toggleAction(true);
+				if (fire == false) 
+				{
+					b = new RepulsorBeam();
+					b->toggleAction(true);
+					b->setVelocity();
+				}
 			}
 			else {
 				v_people[0].toggleAction(false);
-				b.toggleAction(false);
 			}
 
 
 			v_people[0].update(getTimeStep());
 			v_people[0].draw();
-			b.draw();
-		}
+			if (b != nullptr)
+			{
+				b->update(getTimeStep());
+				b->draw();
+			}
 
+			if (b != nullptr)
+			{
+				if (b->getCenter().x <= 1.5f)
+				{
+					fire = true;
+				}
+				else
+				{
+					fire = false;
+					delete b;
+					b = nullptr;
+				}
+				
+			}
+		}
 		void makePeople(const unsigned in_u)
 		{
 			/*for (unsigned i = 0; i < in_u; i++)
@@ -161,7 +207,7 @@ namespace jm
 				Person p = Person{ vec2(in_u / 10 , in_u / 10) };
 				v_people.push_back(p);
 			}*/
-			Person p = Person{ vec2(0.0f , 0.0f) };
+			Person p = Person{ vec2(-0.7f , 0.0f) };
 			Person p1 = Person{ vec2(0.4f , 0.4f) };
 			Person p2 = Person{ vec2(-0.2f , -0.2f) };
 			v_people.push_back(p);
