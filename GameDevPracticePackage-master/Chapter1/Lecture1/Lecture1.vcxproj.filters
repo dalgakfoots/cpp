@@ -16,6 +16,9 @@
     <Filter Include="Examples">
       <UniqueIdentifier>{e4e862aa-1f67-4810-802e-a01abae79dff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Examples\MyExamples">
+      <UniqueIdentifier>{795ed328-3cd6-419d-84f1-878d160fd633}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -31,7 +34,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SolarExample.h">
-      <Filter>Examples</Filter>
+      <Filter>Examples\MyExamples</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="SolarSystem.h">
       <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTankExample.h">
+      <Filter>Examples\MyExamples</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

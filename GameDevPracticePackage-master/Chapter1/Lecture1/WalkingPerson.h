@@ -14,17 +14,34 @@ namespace jm
 	class WalkingPerson : public Game2D
 	{
 		float time = 0.0f;
+		vec2 init_vec;
+
+	public :
+		WalkingPerson(vec2 in_vec) : init_vec(in_vec)
+		{
+			
+		}
 
 	public:
 		void update() override
 		{
+			translate(init_vec);
+
 			// gold face
 			beginTransformation();
-			translate(0.0f, 0.12f);
+			translate(0.0f , 0.12f);
 			drawFilledCircle(Colors::gold, 0.08f);
 			translate(0.05f, 0.03f);
 			drawFilledCircle(Colors::white, 0.01f); // while eye
 
+			endTransformation();
+
+			// yellow arm
+			beginTransformation();
+			rotate(sin(time * 0.25f) * -30.0f);					// animation!
+			scale(1.0f, 2.0f);
+			translate(0.0f, -0.1f);
+			drawFilledBox(Colors::yellow, 0.05f, 0.18f);
 			endTransformation();
 
 			// red body
@@ -36,7 +53,7 @@ namespace jm
 
 			// yellow arm
 			beginTransformation();
-			rotate(sin(time*5.0f) * 30.0f);					// animation!
+			rotate(sin(time*0.25f) * 30.0f);					// animation!
 			scale(1.0f, 2.0f);
 			translate(0.0f, -0.1f);
 			drawFilledBox(Colors::yellow, 0.05f, 0.18f);
@@ -46,7 +63,16 @@ namespace jm
 			beginTransformation();
 			translate(0.0f, -0.6f);
 			translate(0.0f, 0.2f);
-			rotate(sinf(time*5.0f + 3.141592f) * 30.0f);	// animation!
+			rotate(sinf(time* 0.25f + 3.141592f) * 30.0f);	// animation!
+			translate(0.0f, -0.2f);
+			drawFilledBox(Colors::green, 0.1f, 0.4f);
+			endTransformation();
+
+			// green leg
+			beginTransformation();
+			translate(0.0f, -0.6f);
+			translate(0.0f, 0.2f);
+			rotate(sinf(time * 0.25f + 3.141592f) * -30.0f);	// animation!
 			translate(0.0f, -0.2f);
 			drawFilledBox(Colors::green, 0.1f, 0.4f);
 			endTransformation();
