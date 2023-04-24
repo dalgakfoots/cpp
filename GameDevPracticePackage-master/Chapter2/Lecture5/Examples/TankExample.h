@@ -2,6 +2,11 @@
 
 #include "Game2D.h"
 #include <map>
+//#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace jm
 {
@@ -9,6 +14,10 @@ namespace jm
 	{
 	public:
 		virtual void moveUp(float dt) = 0;
+		virtual void moveDown(float dt) = 0;
+		virtual void moveLeft(float dt) = 0;
+		virtual void moveRight(float dt) = 0;
+		virtual void space(float dt) = 0;
 	};
 
 	class Command
@@ -18,12 +27,75 @@ namespace jm
 		virtual void execute(Actor& actor, float dt) = 0;
 	};
 
+	// Commands
+
 	class UpCommand : public Command 
 	{
 	public:
 		virtual void execute(Actor& actor, float dt) override
 		{
 			actor.moveUp(dt);
+		}
+	};
+
+	class DownCommand : public Command
+	{
+	public:
+		virtual void execute(Actor& actor, float dt) override
+		{
+			actor.moveDown(dt);
+		}
+	};
+
+	class LeftCommand : public Command
+	{
+	public:
+		virtual void execute(Actor& actor, float dt) override
+		{
+			actor.moveLeft(dt);
+		}
+	};
+
+	class RightCommand : public Command
+	{
+	public:
+		virtual void execute(Actor& actor, float dt) override
+		{
+			actor.moveRight(dt);
+		}
+	};
+
+	class SpaceCommand : public Command
+	{
+	public:
+		virtual void execute(Actor& actor, float dt) override
+		{
+			actor.space(dt);
+		}
+	};
+
+	class MyBullet : public Actor
+	{
+	public:
+
+		void moveUp(float dt) override {}
+		void moveDown(float dt) override {}
+		void moveLeft(float dt) override {}
+		void moveRight(float dt) override {}
+		void space(float dt) override
+		{
+
+		}
+
+		void draw()
+		{
+
+		}
+
+
+		void update()
+		{
+
 		}
 	};
 
@@ -35,7 +107,26 @@ namespace jm
 
 		void moveUp(float dt) override
 		{
-			center.y += 0.5f * dt;
+			center.y += 0.025f * dt;
+		}
+
+		void moveDown(float dt) override
+		{
+			center.y -= 0.025f * dt;
+		}
+
+		void moveLeft(float dt) override
+		{
+			center.x -= 0.025f * dt;
+		}
+
+		void moveRight(float dt) override
+		{
+			center.x += 0.025f * dt;
+		}
+
+		void space(float dt) override
+		{
 		}
 
 		void draw()
@@ -58,7 +149,7 @@ namespace jm
 	public:
 		Command * button_up = nullptr;
 
-		//std::map<int, Command *> key_command_map;
+		std::map<int, Command *> key_command_map;
 
 		InputHandler()
 		{
@@ -67,12 +158,12 @@ namespace jm
 
 		void handleInput(Game2D & game, Actor & actor, float dt)
 		{
-			if (game.isKeyPressed(GLFW_KEY_UP))  button_up->execute(actor, dt);
+			//if (game.isKeyPressed(GLFW_KEY_UP))  button_up->execute(actor, dt);
 
-			/*for (auto & m : key_command_map)
+			for (auto & m : key_command_map)
 			{
 				if (game.isKeyPressed(m.first)) m.second->execute(actor, dt);
-			}*/
+			}
 		}
 	};
 
@@ -80,15 +171,48 @@ namespace jm
 	{
 	public:
 		MyTank tank;
-
+		MyBullet* bullet;
 		InputHandler input_handler;
 
 	public:
 		TankExample()
 			: Game2D("This is my digital canvas!", 1024, 768, false, 2)
 		{
-			//key mapping
-			//input_handler.key_command_map[GLFW_KEY_UP] = new UpCommand;
+
+			// load key-setting file
+			std::ifstream ifs("key_binding.txt");
+
+			if (!ifs)
+			{
+				//key mapping
+				input_handler.key_command_map[GLFW_KEY_UP] = new UpCommand;
+				input_handler.key_command_map[GLFW_KEY_DOWN] = new DownCommand;
+				input_handler.key_command_map[GLFW_KEY_LEFT] = new LeftCommand;
+				input_handler.key_command_map[GLFW_KEY_RIGHT] = new RightCommand;
+			}
+			else
+			{
+				
+				while (ifs)
+				{
+					std::string str;
+					getline(ifs, str);
+					if (str.empty()) continue;
+					std::stringstream ss(str);
+
+
+					std::string temp;
+					std::vector<std::string> v;
+					while (getline(ss, temp, ' ')) {
+						if (temp == "SPACE") temp = " ";
+						v.push_back(temp);
+					}
+
+					//std::cout << (int)(v[0].c_str()[0]) << std::endl;
+					input_handler.key_command_map[(int)(v[0].c_str()[0])] = getCommand(v[1]);
+				}
+			}
+			
 		}
 
 		~TankExample()
@@ -104,9 +228,23 @@ namespace jm
 			if (isKeyPressed(GLFW_KEY_DOWN))	tank.center.y -= 0.5f * getTimeStep();*/
 
 			input_handler.handleInput(*this, tank, getTimeStep());
+			//input_handler.handleInput(*this, *bullet, getTimeStep());
 
 			// rendering
 			tank.draw();
 		}
+	private:
+		Command* getCommand(const std::string& input)
+		{
+			if (input == "move_up") return new UpCommand;
+			else if (input == "move_down") return new DownCommand;
+			else if (input == "move_left") return new LeftCommand;
+			else if (input == "move_right") return new RightCommand;
+			else if (input == "shoot") return new SpaceCommand;
+			else return nullptr;
+		}
 	};
+
+	
+
 }
