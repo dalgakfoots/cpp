@@ -74,28 +74,27 @@ namespace jm
 		}
 	};
 
-	class MyBullet : public Actor
+	class MyBullet
 	{
 	public:
 
-		void moveUp(float dt) override {}
-		void moveDown(float dt) override {}
-		void moveLeft(float dt) override {}
-		void moveRight(float dt) override {}
-		void space(float dt) override
-		{
-
-		}
+		vec2 center = { 0.0f , 0.0f };
+		vec2 velocity = { 0.0f , 0.0f };
 
 		void draw()
 		{
+			beginTransformation();
+			translate(center);
+			drawFilledRegularConvexPolygon(Colors::yellow, 0.02f, 8);
+			drawWiredRegularConvexPolygon(Colors::gray, 0.02f, 8);
+			endTransformation();
 
 		}
 
 
-		void update()
+		void update(float dt)
 		{
-
+			center += velocity * dt;
 		}
 	};
 
@@ -104,6 +103,12 @@ namespace jm
 	public:
 		vec2 center = vec2(0.0f, 0.0f);
 		//vec2 direction = vec2(1.0f, 0.0f, 0.0f);
+		MyBullet* bullet = nullptr;
+
+		~MyTank()
+		{
+			if (bullet != nullptr) delete bullet;
+		}
 
 		void moveUp(float dt) override
 		{
@@ -127,6 +132,12 @@ namespace jm
 
 		void space(float dt) override
 		{
+			if (bullet == nullptr)
+			{
+				bullet = new MyBullet;
+				bullet->center = this->center + vec2(0.2f, 0.1f);
+				bullet->velocity = { 0.5f, 0.0f };
+			}
 		}
 
 		void draw()
@@ -171,7 +182,6 @@ namespace jm
 	{
 	public:
 		MyTank tank;
-		MyBullet* bullet;
 		InputHandler input_handler;
 
 	public:
@@ -228,10 +238,26 @@ namespace jm
 			if (isKeyPressed(GLFW_KEY_DOWN))	tank.center.y -= 0.5f * getTimeStep();*/
 
 			input_handler.handleInput(*this, tank, getTimeStep());
-			//input_handler.handleInput(*this, *bullet, getTimeStep());
+
+			// update
+			if (tank.bullet != nullptr) tank.bullet->update(getTimeStep());
 
 			// rendering
 			tank.draw();
+			if (tank.bullet != nullptr)
+			{
+				if (tank.bullet->center.x >= 1.5f)
+				{
+					delete tank.bullet;
+					tank.bullet = nullptr;
+				}
+				else
+				{
+					tank.bullet->draw();
+				}
+				
+			}
+				
 		}
 	private:
 		Command* getCommand(const std::string& input)
